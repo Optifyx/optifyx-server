@@ -1,0 +1,19 @@
+fastapi
+uvicorn
+pystray
+pillow
+psutil
+tk
+opencv-python
+speedtest-cli
+GPUtil
+gps3
+pyserial
+requests
+setuptools
+pyperclip
+plyer
+
+# For tests
+httpx
+pytest
