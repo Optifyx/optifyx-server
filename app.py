@@ -3,7 +3,7 @@ from pystray import MenuItem as item
 from PIL import Image
 import tkinter as tk
 import threading
-from utils.endpoints import run_server
+from src.internal import run_server
 import os
 import time
 import shutil
