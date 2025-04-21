@@ -68,7 +68,7 @@ def create_window():
     root.mainloop()
 
 if __name__ == "__main__":
-    # add_to_startup()
+    add_to_startup()
 
     window_thread = threading.Thread(target=create_window, name="WindowThread", daemon=True)
     tray_thread = threading.Thread(target=setup_tray_icon, name="TrayThread", daemon=True)

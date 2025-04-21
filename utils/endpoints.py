@@ -256,7 +256,7 @@ def get_home_realtime():
         "network_usage": f"↑{net_io.bytes_sent/1e6:.1f}MB ↓{net_io.bytes_recv/1e6:.1f}MB",
         **internet_speed,
         "bluetooth": bluetooth_status,
-        "uptime": f"{uptime_formatted} hours"
+        "uptime": f"{uptime_formatted}"
     }
 
 def get_system_realtime():
