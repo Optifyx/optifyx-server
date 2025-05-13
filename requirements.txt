@@ -13,6 +13,7 @@ requests
 setuptools
 pyperclip
 plyer
+qrcode
 
 # For tests
 httpx

@@ -8,9 +8,14 @@ from src.api.endpoint_security import router as security_router
 from src.api.endpoint_webcam import router as webcam_router
 from src.api.endpoint_misc import router as misc_router
 from src.api.websocket_routes import router as ws_router
+from fastapi.responses import RedirectResponse
 
 import threading
 from src.core.code import generated_code, display_code_window
+
+available_port = check_ports()
+
+SERVER_PORT = available_port
 
 app = FastAPI()
 
@@ -25,11 +30,12 @@ app.include_router(webcam_router)
 app.include_router(misc_router)
 app.include_router(ws_router)
 
-available_port = check_ports()
+print(f"Logs: Server started on port {SERVER_PORT}")
 
-print(f"Logs: Server started on port {available_port}")
+@app.get("/")
+async def root():
+    return RedirectResponse(url="https://optifyx.thueshen.me/status/success")
 
-# Inicialização do Servidor
 def run_server():
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=available_port)
+    uvicorn.run(app, host="0.0.0.0", port=SERVER_PORT)

@@ -1,0 +1,6 @@
+src/__pycache__/
+src/api/__pycache__/
+src/core/__pycache__/
+src/middleware/__pycache__/
+src/models/__pycache__/
+temp/
