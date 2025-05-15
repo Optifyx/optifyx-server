@@ -30,7 +30,13 @@ app.include_router(webcam_router)
 app.include_router(misc_router)
 app.include_router(ws_router)
 
-print(f"Logs: Server started on port {SERVER_PORT}")
+WHITE_BOLD = "\033[1;37m"
+GREEN = "\033[0;32m"
+BLUE = "\033[0;34m"
+RESET = "\033[0m"
+
+print(f"{WHITE_BOLD}Logs: Server started on port {SERVER_PORT}{RESET}")
+print(f"{WHITE_BOLD}{GREEN}Dev Logs:{WHITE_BOLD} Tests available at {BLUE}http://localhost:{SERVER_PORT}/docs{RESET}")
 
 @app.get("/")
 async def root():
