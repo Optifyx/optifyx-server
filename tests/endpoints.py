@@ -37,5 +37,25 @@ class TestEndpoints(unittest.TestCase):
                 except Exception as e:
                     self.fail(f"{name} raised an exception: {e}")
 
+    def test_invalid_endpoints(self):
+        invalid_endpoints = {
+            "POST /invalid_start_device": lambda: requests.post(f"{BASE_URL}/invalid_start_device"),
+            "POST /invalid_connection_code": lambda: requests.post(f"{BASE_URL}/invalid_connection_code"),
+            "GET /invalid_system_realtime": lambda: requests.get(f"{BASE_URL}/invalid_system_realtime"),
+            "GET /invalid_disk_realtime": lambda: requests.get(f"{BASE_URL}/invalid_disk_realtime"),
+            "GET /invalid_home_realtime": lambda: requests.get(f"{BASE_URL}/invalid_home_realtime"),
+            "GET /invalid_security_realtime": lambda: requests.get(f"{BASE_URL}/invalid_security_realtime"),
+            "GET /invalid_webcam_check": lambda: requests.get(f"{BASE_URL}/invalid_webcam_check"),
+            "GET /invalid_public_ip": lambda: requests.get(f"{BASE_URL}/invalid_public_ip"),
+            "GET /invalid_check_online_connections": lambda: requests.get(f"{BASE_URL}/invalid_check_online_connections"),
+        }
+        for name, request_func in invalid_endpoints.items():
+            with self.subTest(endpoint=name):
+                try:
+                    response = request_func()
+                    self.assertTrue(response.status_code in [404, 405], f"{name} failed with status code {response.status_code}")
+                except Exception as e:
+                    self.fail(f"{name} raised an exception: {e}")
+
 if __name__ == "__main__":
     unittest.main()
