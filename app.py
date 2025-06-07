@@ -76,7 +76,6 @@ class LoggerWriter:
 sys.stdout = LoggerWriter(sys.__stdout__)
 sys.stderr = LoggerWriter(sys.__stderr__)
 
-# Log and window functions
 def update_log_window():
     last_size = 0
     while True:
@@ -191,8 +190,6 @@ def setup_tray_icon():
 
 def create_window():
     global root
-    # Aqui está a modificação solicitada:
-    import os
     if os.environ.get('DISPLAY', None):
         root = tk.Tk()
         root.title("Optifyx")
@@ -205,19 +202,28 @@ def create_window():
         threading.Timer(0.4, lambda: root.withdraw()).start()
         root.mainloop()
     else:
-        print("Aviso: Ambiente sem display. GUI não será iniciada.")
+        print("Warning: No display environment. GUI will not start.")
 
 if __name__ == "__main__":
     add_to_startup()
-    window_thread = threading.Thread(target=create_window, name="WindowThread", daemon=True)
-    tray_thread = threading.Thread(target=setup_tray_icon, name="TrayThread", daemon=True)
     server_thread = threading.Thread(target=run_server, name="ServerThread", daemon=True)
     log_thread = threading.Thread(target=update_log_window, name="LogThread", daemon=True)
-    threads.extend([window_thread, tray_thread, server_thread, log_thread])
-    for t in threads:
+    threads.extend([server_thread, log_thread])
+    for t in [server_thread, log_thread]:
         t.start()
-    try:
-        while True: time.sleep(1)
-    except KeyboardInterrupt:
-        print("Program terminated.")
-        sys.exit(0)
+
+    if IS_MAC:
+        create_window()
+        setup_tray_icon()
+    else:
+        window_thread = threading.Thread(target=create_window, name="WindowThread", daemon=True)
+        tray_thread = threading.Thread(target=setup_tray_icon, name="TrayThread", daemon=True)
+        threads.extend([window_thread, tray_thread])
+        window_thread.start()
+        tray_thread.start()
+        try:
+            while True:
+                time.sleep(1)
+        except KeyboardInterrupt:
+            print("Program terminated.")
+            sys.exit(0)

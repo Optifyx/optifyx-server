@@ -15,6 +15,7 @@ pyperclip
 plyer
 qrcode
 websockets
+pystray
 
 # Platform-specific
 notify2
