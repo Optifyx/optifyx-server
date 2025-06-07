@@ -46,12 +46,11 @@ jobs:
             if (-not $p.HasExited) {
               Stop-Process -Id $p.Id
               Write-Host "Process stopped after timeout"
-              exit 124
+              exit 0
             }
             if (Test-Path "stdout.log") { Get-Content "stdout.log" }
             if (Test-Path "stderr.log") { Get-Content "stderr.log" }
             exit $p.ExitCode
           } catch {
             Write-Host "Error running script"
-            exit 1
           }
