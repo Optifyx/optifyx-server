@@ -191,16 +191,21 @@ def setup_tray_icon():
 
 def create_window():
     global root
-    root = tk.Tk()
-    root.title("Optifyx")
-    root.geometry("650x650")
-    root.configure(bg='black')
-    img = tk.PhotoImage(file="Assets/image.png")
-    tk.Label(root, image=img, bg='black').pack(pady=20)
-    tk.Label(root, text="You can close this tab now", fg="white", font=("Arial", 20), bg='black').pack()
-    tk.Button(root, text="Show Debug Log", command=open_log_window, bg="gray", fg="lime").pack(pady=8)
-    threading.Timer(0.4, lambda: root.withdraw()).start()
-    root.mainloop()
+    # Aqui está a modificação solicitada:
+    import os
+    if os.environ.get('DISPLAY', None):
+        root = tk.Tk()
+        root.title("Optifyx")
+        root.geometry("650x650")
+        root.configure(bg='black')
+        img = tk.PhotoImage(file="Assets/image.png")
+        tk.Label(root, image=img, bg='black').pack(pady=20)
+        tk.Label(root, text="You can close this tab now", fg="white", font=("Arial", 20), bg='black').pack()
+        tk.Button(root, text="Show Debug Log", command=open_log_window, bg="gray", fg="lime").pack(pady=8)
+        threading.Timer(0.4, lambda: root.withdraw()).start()
+        root.mainloop()
+    else:
+        print("Aviso: Ambiente sem display. GUI não será iniciada.")
 
 if __name__ == "__main__":
     add_to_startup()
