@@ -15,7 +15,9 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          chmod +x compatibility/install.sh
+          ./compatibility/install.sh
 
       - name: Run script with 10s timeout
         run: |
