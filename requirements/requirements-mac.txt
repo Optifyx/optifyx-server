@@ -1,0 +1,25 @@
+# Cross-platform
+fastapi
+uvicorn
+pillow
+psutil
+tk
+opencv-python
+speedtest-cli
+GPUtil
+gps3
+pyserial
+requests
+setuptools
+pyperclip
+plyer
+qrcode
+websockets
+
+# Platform-specific
+pystray
+pync
+
+# For tests
+httpx
+pytest

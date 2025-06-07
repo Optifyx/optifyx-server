@@ -1,6 +1,6 @@
+# Cross-platform
 fastapi
 uvicorn
-pystray
 pillow
 psutil
 tk
@@ -15,6 +15,9 @@ pyperclip
 plyer
 qrcode
 websockets
+
+# Platform-specific
+pystray
 win10toast
 pypiwin32==223
 
