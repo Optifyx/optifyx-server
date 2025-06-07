@@ -19,12 +19,26 @@ IS_WINDOWS = current_os == "Windows"
 IS_LINUX = current_os == "Linux"
 IS_MAC = current_os == "Darwin"
 
-try:
-    import pystray
-    from pystray import MenuItem as item
-except ImportError:
-    print("pystray not available. Tray icon will be disabled.")
+def has_display():
+    # Para Linux/macOS: verifica DISPLAY
+    if IS_LINUX or IS_MAC:
+        return bool(os.environ.get('DISPLAY'))
+    # Windows normalmente tem GUI
+    if IS_WINDOWS:
+        return True
+    return False
 
+# Import pystray SOMENTE se tiver display
+pystray = None
+MenuItem = None
+if has_display():
+    try:
+        import pystray
+        from pystray import MenuItem as MenuItem
+    except ImportError:
+        print("pystray not available. Tray icon will be disabled.")
+
+# Import notificações
 try:
     if IS_WINDOWS:
         from win10toast import ToastNotifier
@@ -171,15 +185,20 @@ def show_qr_code():
         root.after(0, open_qr_window)
 
 def get_menu(icon):
+    if pystray is None or MenuItem is None:
+        return None
     return pystray.Menu(
-        item("Show QR Code", show_qr_code),
-        item("Show Debug Log", open_log_window),
-        item(lambda item: f"Toggle Debug Mode ({'ON' if debug_enabled else 'OFF'})", toggle_debug),
-        item("Website", lambda: webbrowser.open("https://optifyx.theushen.me")),
-        item("Exit", exit_action)
+        MenuItem("Show QR Code", show_qr_code),
+        MenuItem("Show Debug Log", open_log_window),
+        MenuItem(lambda item: f"Toggle Debug Mode ({'ON' if debug_enabled else 'OFF'})", toggle_debug),
+        MenuItem("Website", lambda: webbrowser.open("https://optifyx.theushen.me")),
+        MenuItem("Exit", exit_action)
     )
 
 def setup_tray_icon():
+    if pystray is None:
+        print("Tray icon disabled because pystray is not available or no display.")
+        return
     try:
         icon_image = Image.open(os.path.abspath("Assets/image.ico"))
         icon = pystray.Icon("Optifyx", icon_image, "Optifyx Server")
@@ -190,7 +209,7 @@ def setup_tray_icon():
 
 def create_window():
     global root
-    if os.environ.get('DISPLAY', None):
+    if has_display():
         root = tk.Tk()
         root.title("Optifyx")
         root.geometry("650x650")
@@ -203,15 +222,6 @@ def create_window():
         root.mainloop()
     else:
         print("Warning: No display environment. GUI will not start.")
-
-def has_display():
-    # Para Linux/macOS: verifica DISPLAY
-    if IS_LINUX or IS_MAC:
-        return bool(os.environ.get('DISPLAY'))
-    # Para Windows, normalmente tem GUI, então retorna True
-    if IS_WINDOWS:
-        return True
-    return False
 
 if __name__ == "__main__":
     add_to_startup()
