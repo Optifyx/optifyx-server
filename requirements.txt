@@ -16,7 +16,7 @@ plyer
 qrcode
 websockets
 win10toast
-pypiwin32==227
+pypiwin32==223
 
 # For tests
 httpx
