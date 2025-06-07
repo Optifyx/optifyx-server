@@ -17,5 +17,14 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run script
-        run: python3 app.py
+      - name: Run script with timeout
+        shell: powershell
+        run: |
+          $p = Start-Process python3 -ArgumentList 'app.py' -PassThru
+          Start-Sleep -Seconds 10
+          if (!$p.HasExited) {
+            Stop-Process -Id $p.Id
+          }
+          if ($p.ExitCode -ne 0) {
+            exit $p.ExitCode
+          }
