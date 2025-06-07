@@ -18,22 +18,25 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run script with timeout
-        shell: powershell
+        shell: pwsh
         run: |
-          $p = Start-Process python -ArgumentList 'app.py' -PassThru
-          $timeout = 25
-          $sw = [Diagnostics.Stopwatch]::StartNew()
-          while (-not $p.HasExited -and $sw.Elapsed.TotalSeconds -lt $timeout) {
-            Start-Sleep -Seconds 1
-          }
-          if (-not $p.HasExited) {
-            Stop-Process -Id $p.Id
-            Write-Host "Process stopped after timeout"
-            $timedOut = $true
-          } else {
-            $timedOut = $false
-          }
-          $p.WaitForExit()
-          if (-not $timedOut -and $p.ExitCode -ne 0) {
+          try {
+            $p = Start-Process -FilePath "python" -ArgumentList "app.py" -NoNewWindow -PassThru -RedirectStandardOutput "stdout.log" -RedirectStandardError "stderr.log"
+            $timeout = 25
+            $sw = [Diagnostics.Stopwatch]::StartNew()
+            while (-not $p.HasExited -and $sw.Elapsed.TotalSeconds -lt $timeout) {
+              Start-Sleep -Seconds 1
+              if (Test-Path "stdout.log") { Get-Content "stdout.log" -Raw }
+              if (Test-Path "stderr.log") { Get-Content "stderr.log" -Raw }
+            }
+            if (-not $p.HasExited) {
+              Stop-Process -Id $p.Id
+              Write-Host "Process stopped after timeout"
+            }
+            if (Test-Path "stdout.log") { Get-Content "stdout.log" }
+            if (Test-Path "stderr.log") { Get-Content "stderr.log" }
             exit $p.ExitCode
+          } catch {
+            Write-Host "Error running script"
+            exit 1
           }
