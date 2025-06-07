@@ -29,8 +29,11 @@ jobs:
           if (-not $p.HasExited) {
             Stop-Process -Id $p.Id
             Write-Host "Process stopped after timeout"
+            $timedOut = $true
+          } else {
+            $timedOut = $false
           }
           $p.WaitForExit()
-          if ($p.ExitCode -ne 0) {
+          if (-not $timedOut -and $p.ExitCode -ne 0) {
             exit $p.ExitCode
           }
