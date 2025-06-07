@@ -204,6 +204,15 @@ def create_window():
     else:
         print("Warning: No display environment. GUI will not start.")
 
+def has_display():
+    # Para Linux/macOS: verifica DISPLAY
+    if IS_LINUX or IS_MAC:
+        return bool(os.environ.get('DISPLAY'))
+    # Para Windows, normalmente tem GUI, então retorna True
+    if IS_WINDOWS:
+        return True
+    return False
+
 if __name__ == "__main__":
     add_to_startup()
     server_thread = threading.Thread(target=run_server, name="ServerThread", daemon=True)
@@ -212,18 +221,22 @@ if __name__ == "__main__":
     for t in [server_thread, log_thread]:
         t.start()
 
-    if IS_MAC:
-        create_window()
-        setup_tray_icon()
+    if has_display():
+        if IS_MAC:
+            create_window()
+            setup_tray_icon()
+        else:
+            window_thread = threading.Thread(target=create_window, name="WindowThread", daemon=True)
+            tray_thread = threading.Thread(target=setup_tray_icon, name="TrayThread", daemon=True)
+            threads.extend([window_thread, tray_thread])
+            window_thread.start()
+            tray_thread.start()
     else:
-        window_thread = threading.Thread(target=create_window, name="WindowThread", daemon=True)
-        tray_thread = threading.Thread(target=setup_tray_icon, name="TrayThread", daemon=True)
-        threads.extend([window_thread, tray_thread])
-        window_thread.start()
-        tray_thread.start()
-        try:
-            while True:
-                time.sleep(1)
-        except KeyboardInterrupt:
-            print("Program terminated.")
-            sys.exit(0)
+        print("Warning: No display environment. Tray Icon will not start.")
+
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("Program terminated.")
+        sys.exit(0)
