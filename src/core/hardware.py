@@ -1,12 +1,16 @@
+import builtins
+import sys
+sys.modules['__builtin__'] = builtins
+
 import psutil
 import GPUtil
 import subprocess
-import speedtest
+from speedtest import Speedtest
 import time
 
 def get_internet_speed():
     try:
-        st = speedtest.Speedtest()
+        st = Speedtest()
         st.get_best_server()
         download_speed = st.download() / 1_000_000
         upload_speed = st.upload() / 1_000_000

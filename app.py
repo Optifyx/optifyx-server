@@ -25,7 +25,8 @@ log_window = None
 log_text_widget = None
 log_file_path = os.path.join("temp", "logs.gz")
 
-# Limpa o arquivo de logs ao iniciar
+os.makedirs(os.path.dirname(log_file_path), exist_ok=True)
+
 if os.path.exists(log_file_path):
     os.remove(log_file_path)
 with gzip.open(log_file_path, 'wb') as f:
@@ -33,7 +34,7 @@ with gzip.open(log_file_path, 'wb') as f:
 
 class LoggerWriter:
     def __init__(self, stream):
-        self.stream = stream
+        self.stream = stream or open(os.devnull, 'w')  # Garante um stream válido
         os.makedirs(os.path.dirname(log_file_path), exist_ok=True)
         if not os.path.exists(log_file_path):
             with gzip.open(log_file_path, 'wb') as f:
@@ -42,12 +43,17 @@ class LoggerWriter:
     def write(self, message):
         if message.strip() == "":
             return
-        # Garante quebra de linha no final
         if not message.endswith('\n'):
             message += '\n'
         timestamped = f"[{time.strftime('%H:%M:%S')}] {message}"
-        self.stream.write(timestamped)
-        self.stream.flush()
+        try:
+            self.stream.write(timestamped)
+            self.stream.flush()
+        except Exception as e:
+            # Último recurso para evitar crash
+            with open(os.devnull, 'w') as devnull:
+                devnull.write(timestamped)
+
         with gzip.open(log_file_path, 'ab') as f:
             f.write(timestamped.encode('utf-8'))
 
@@ -111,11 +117,15 @@ def toggle_debug(icon=None, item=None):
     global debug_enabled
     debug_enabled = not debug_enabled
     print(f"Debug mode {'ON' if debug_enabled else 'OFF'}")
-    # Não precisa atualizar o menu, pois o texto do item é dinâmico
 
 def add_to_startup():
     startup_folder = os.path.join(os.getenv("APPDATA"), r"Microsoft\Windows\Start Menu\Programs\Startup")
-    script_path = os.path.abspath(__file__)
+
+    if getattr(sys, 'frozen', False):
+        script_path = sys.executable
+    else:
+        script_path = os.path.abspath(__file__)
+
     destination_path = os.path.join(startup_folder, os.path.basename(script_path))
 
     if not os.path.exists(destination_path):

@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from src.core.ports import check_ports
 from src.middleware.request_counter import RequestCounterMiddleware
 from src.api.endpoint_device import router as device_router
@@ -18,6 +19,14 @@ available_port = check_ports()
 SERVER_PORT = available_port
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.add_middleware(RequestCounterMiddleware)
 

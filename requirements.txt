@@ -15,6 +15,7 @@ pyperclip
 plyer
 qrcode
 websockets
+win10toast
 
 # For tests
 httpx
