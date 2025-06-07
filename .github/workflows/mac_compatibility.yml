@@ -19,10 +19,10 @@ jobs:
           chmod +x compatibility/install.sh
           ./compatibility/install.sh
 
-      - name: Install timeout (coreutils)
-        run: brew install coreutils
-
       - name: Run script with 10s timeout
         run: |
-          gtimeout 10s python3 app.py
+          python3 app.py &
+          PID=$!
+          sleep 10
+          kill $PID
         shell: bash
