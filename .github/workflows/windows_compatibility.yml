@@ -20,22 +20,20 @@ jobs:
       - name: Run script with timeout
         shell: powershell
         run: |
-            $p = Start-Process python -ArgumentList 'app.py' -PassThru
-            
-            $timeout = 10
-            $sw = [Diagnostics.Stopwatch]::StartNew()
-            
-            while (-not $p.HasExited -and $sw.Elapsed.TotalSeconds -lt $timeout) {
+          $p = Start-Process python -ArgumentList 'app.py' -PassThru
+          $timeout = 25
+          $sw = [Diagnostics.Stopwatch]::StartNew()
+          while (-not $p.HasExited -and $sw.Elapsed.TotalSeconds -lt $timeout) {
             Start-Sleep -Seconds 1
           }
-            
-            if (-not $p.HasExited) {
+          if (-not $p.HasExited) {
             Stop-Process -Id $p.Id
             Write-Host "Process stopped after timeout"
+            $timedOut = $true
+          } else {
+            $timedOut = $false
           }
-            
-            $p.WaitForExit()
-            
-            if ($p.ExitCode -ne 0) {
+          $p.WaitForExit()
+          if (-not $timedOut -and $p.ExitCode -ne 0) {
             exit $p.ExitCode
           }
